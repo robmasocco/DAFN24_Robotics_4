@@ -1,10 +1,10 @@
-% Section 3 - Actions
+% Section 2 - Actions
 % Roberto Masocco <roberto.masocco@uniroma2.it>
-% May 24, 2023
+% May 16, 2024
 
 % ### Actions ###
 \section{Actions}
-\graphicspath{{figs/section3/}}
+\graphicspath{{figs/section2/}}
 
 % --- Limitations of services ---
 \begin{frame}{Limitations of services}
@@ -12,8 +12,8 @@
   \begin{alertblock}{Services implementation assumptions}
     \begin{itemize}
       \item Since the client may block for the entire duration of the request processing, \textbr{server computations should be short and always produce some result} (\emph{e.g.}, even an error must be a result, but \textbr{we} have to encode it).
-      \item Service calls are finished only when the response has been received, \emph{i.e.}, \textbr{if either the client or the server crash, the behaviour of the other one is undefined} (no \textbr{state machine}! Say hello to \textbr{deadlocks}, crashes...).
-      \item Once a service is called, \textbr{the request may never be interrupted}.
+      \item Service calls are finished only when the response has been received, \emph{i.e.}, \textbr{if the server crashes before sending the response, the client's behavior is undefined, especially when it is blocking} (no \textbr{state machine}! Say hello to \textbr{deadlocks}, crashes...).
+      \item Once a service is called, \textbr{the processing of the request may never be interrupted}.
     \end{itemize}
   \end{alertblock}
   These make operations that \textbg{must be requested} and \textbg{take a long time} (for CPUs!) completely unfeasible.\\
@@ -29,9 +29,10 @@
     \item \textbg{Result}: the final result of the requested operation.
   \end{enumerate}
   \vspace{.5cm}
-  Their implementation is still a bit cumbersome because of the \textbg{many different data types} (classes) involved, and is found in the \href{https://github.com/ros2/rclcpp/tree/humble/rclcpp_action}{\color{blue}{\underline{\texttt{rclcpp\_action}}}} and \href{https://github.com/ros2/rclpy/tree/humble/rclpy/rclpy/action}{\color{blue}{\underline{\texttt{rclpy action}}}} libraries.
+  Their implementation is still a bit cumbersome because of the \textbg{many different data types} (classes) involved, as well as many \textbg{API inconsistencies}.\\
+  It is found in the \href{https://github.com/ros2/rclcpp/tree/humble/rclcpp_action}{\color{blue}{\underline{\texttt{rclcpp\_action}}}} and \href{https://github.com/ros2/rclpy/tree/humble/rclpy/rclpy/action}{\color{blue}{\underline{\texttt{rclpy action}}}} libraries.
   \newline\newline
-  They are \textbg{extensively used for robot navigation and movement}.
+  They are \textbg{extensively used to implement robot navigation and movement}, and many more complex real-world operations, providing a \textbg{software abstraction} for them.
 \end{frame}
 \begin{frame}{ROS 2 actions}{Full client-server paradigm}
   \begin{figure}
@@ -69,10 +70,12 @@
 \end{frame}
 \begin{frame}{ROS 2 actions}{Coding hints for servers and clients}
   \begin{block}{Servers}
-    Goal requests are handled with \textbf{callbacks}, while computations can be handled freely (usually in \textbf{separate threads}). When done, the goal must be marked as \textbf{succeeded} or \textbf{aborted}.
+    Goal requests are handled with \textbf{callbacks}, while computations can be handled freely (usually done in \textbf{separate threads}).\\
+    \textbf{Cancellation requests} are handled with \textbf{callbacks} and can be \textbf{polled} during the computation.\\
+    When done, the goal must be marked as \textbf{succeeded} or \textbf{aborted}.
   \end{block}
   \begin{block}{Clients}
-    Similarly to services, much is done with \textbf{\texttt{future} objects}, but \textbf{callbacks} must be defined to handle \textbf{goal}, \textbf{result} and \textbf{cancellation responses}, and \textbf{feedbacks}.
+    Similarly to services, much is done with \textbf{\texttt{future} objects}, but \textbf{callbacks may be defined} to handle \textbf{goal}, \textbf{result} and \textbf{cancellation responses}, and \textbf{feedbacks}.
   \end{block}
   \begin{block}{}
     \centering

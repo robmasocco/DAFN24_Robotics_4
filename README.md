@@ -1,6 +1,6 @@
-# DAFN23_Robotics_3
+# DAFN24_Robotics_4
 
-DAFN 2023 - Robotics 3: ROS 2 - Advanced communication
+DAFN 2024 - Robotics 4: ROS 2 - Advanced communication II
 
 LaTeX source code and build files.
 
